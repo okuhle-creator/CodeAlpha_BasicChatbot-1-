@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlueDesk | Conversational Help Desk</title>
+  <meta name="description" content="A clean, modern conversational help desk powered by a Python rule-based chatbot.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="site-container">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav" role="banner">
+      <div class="nav-content">
+        <div class="brand-group">
+          <div class="brand-badge" aria-hidden="true">BD</div>
+          <div class="brand-text">
+            <h1 class="brand-title">BlueDesk</h1>
+            <span class="brand-subtitle">Conversational Help Desk</span>
+          </div>
+        </div>
+        <div class="nav-controls">
+          <div class="status-indicator" title="Service status: Active and ready">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-label">Ready</span>
+          </div>
+          <button id="theme-toggle" class="btn-theme-toggle" aria-label="Switch to dark mode" type="button">
+            <svg class="theme-icon icon-sun" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-icon icon-moon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <span class="theme-toggle-text">Dark mode</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Workspace -->
+    <main class="main-content" role="main">
+      <div class="desk-card">
+        <!-- Card Header: Title & Clear conversation button -->
+        <div class="desk-header">
+          <div class="welcome-section">
+            <h2 class="welcome-heading">How can I help you today?</h2>
+            <p class="welcome-subtext">Type a question below or choose a suggested prompt to explore standard help desk responses.</p>
+          </div>
+          <button id="clear-chat-btn" class="btn-clear-chat" type="button" title="Clear current conversation" aria-label="Clear current conversation">
+            <svg class="clear-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+            <span>Clear conversation</span>
+          </button>
+        </div>
+
+        <!-- Quick Prompts Toolbar -->
+        <section class="prompts-bar" aria-label="Suggested quick prompts">
+          <span class="prompts-label">Quick prompts:</span>
+          <div class="prompts-list">
+            <button class="prompt-chip" type="button" data-prompt="Say hello">Say hello</button>
+            <button class="prompt-chip" type="button" data-prompt="How are you?">How are you?</button>
+            <button class="prompt-chip" type="button" data-prompt="What can you do?">What can you do?</button>
+            <button class="prompt-chip" type="button" data-prompt="Say goodbye">Say goodbye</button>
+          </div>
+        </section>
+
+        <!-- Messages Conversation Workspace -->
+        <section class="messages-container" id="messages-container" aria-label="Chat messages list">
+          <!-- Initial Welcome Message from Chatbot -->
+          <div class="message-row bot-row" data-initial="true">
+            <div class="avatar bot-avatar" aria-hidden="true">BD</div>
+            <div class="message-bubble bot-bubble">
+              <div class="bubble-header">
+                <span class="sender-name">BlueDesk</span>
+                <span class="message-time" id="initial-time"></span>
+              </div>
+              <div class="bubble-text">Hi! Welcome to BlueDesk. How can I help you today?</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live region for accessible screen reader announcements -->
+        <div id="sr-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+        <!-- Message Composer Form -->
+        <form class="composer-container" id="chat-form" novalidate>
+          <div class="input-wrapper">
+            <label for="user-input" class="sr-only">Type your message</label>
+            <input 
+              type="text" 
+              id="user-input" 
+              class="message-input" 
+              placeholder="Type your message..." 
+              autocomplete="off" 
+              spellcheck="true" 
+              maxlength="500"
+            />
+          </div>
+          <button type="submit" id="send-btn" class="btn-send" aria-label="Send message">
+            <span>Send</span>
+            <svg class="send-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Institutional Footer -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-content">
+        <p class="footer-text">BlueDesk | Python Rule-Based Chatbot</p>
+        <span class="footer-separator">•</span>
+        <p class="footer-note">CodeAlpha Python Programming Internship - Task 4</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
